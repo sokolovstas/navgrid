@@ -108,7 +108,7 @@ navigation.directive('navGridItem', function($interpolate, $parse, RemoteService
 			};
 		}
 	};
-})
+});
 
 
 
@@ -127,6 +127,8 @@ navigation.directive('navGrid', function($parse, $injector) {
 			});
 
 			$scope.elements = {};
+			$scope.scrolletTop = 0;
+			$scope.scrolletLeft = 0;
 
 			$scope.verticalOverflowItem = 2;
 			$scope.horizontalOverflowItem = 2;
@@ -168,10 +170,19 @@ navigation.directive('navGrid', function($parse, $injector) {
 						$scope.horizontalItem = $scope.horizontalItem + $scope.horizontalOverflowItem;
 						break;
 				}
-				$scope.setItems
 			};
 
 			$scope.matrix();
+
+			$scope.elementsToVisibleArray = function() {
+				var x, y;
+				$scope.elementsArray = $('.nav-grid--scroller').children();
+				for (x = 0; x < $scope.horizontalItem; x++) {
+					for (y = 0; y < $scope.verticalItem; y++) {
+						$scope.elements[x + ':' + y] = $scope.elementsArray[x + y];
+					}
+				}
+			};
 
 			$scope.$watch($attrs.navGrid.split('|')[0].trim(), function(value) {
 				if (value) {
@@ -179,18 +190,20 @@ navigation.directive('navGrid', function($parse, $injector) {
 					$scope.value = value;
 				}
 				if ($scope.horizontalItem > 0 || $scope.verticalItem > 0) {
-					$scope.navGridItems = $scope.value.slice(0, $scope.horizontalItem * $scope.verticalItem);
+					//$scope.navGridItems = $scope.value.slice(0, $scope.horizontalItem * $scope.verticalItem);
+					$scope.getVisibleItem();
 				} else {
-					$scope.navGridItems = $scope.value.slice(0, 10);
+					//$scope.navGridItems = $scope.value.slice(0, 10);
 				}
 				setTimeout(function() {
-					var x, y;
+					/*					var x, y;
 					$scope.elementsArray = $('.nav-grid--scroller').children();
-					for(x = 0; x < $scope.horizontalItem; x++){
-						for(y = 0; y < $scope.verticalItem; y++){
+					for (x = 0; x < $scope.horizontalItem; x++) {
+						for (y = 0; y < $scope.verticalItem; y++) {
 							$scope.elements[x + ':' + y] = $scope.elementsArray[x + y];
 						}
-					}
+					}*/
+					$scope.elementsToVisibleArray();
 					$scope.invalidateSize();
 				});
 			});
@@ -216,37 +229,65 @@ navigation.directive('navGrid', function($parse, $injector) {
 				}
 			};
 
+			$scope.getVisibleItem = function() {
+				$scope.navGridItems = $scope.value.slice($scope.horizontalItem + $scope.scrolletTop - 1, $scope.horizontalItem * $scope.verticalItem + $scope.horizontalItem + $scope.scrolletTop - 1);
+				console.log($scope.navGridItems);
+				setTimeout(function() {
+					$scope.$apply();
+					$scope.elementsToVisibleArray();
+				});
+				console.log($scope.navGridItems);
+				console.log($scope.elements);
+			};
+
 			$scope.$on('focusNavGridItemInNavGrid', function(event, element, data, item) {
 				$('.nav-grid--nav-item', $element).removeClass('active');
 				$(element).addClass('active');
 				$scope.selectedData = data;
 				$scope.selectedItem = item;
-				console.log('focusNavGridItemInNavGrid');
-				console.log($scope.selectedItem);
 			});
 
-			$scope.selcetUpDown = function(y){
+			$scope.selcetUpDown = function(y) {
 				$scope.y = $scope.y + y;
-				if($scope.y >= 0 && $scope.y <= $scope.verticalItem - $scope.verticalOverflowItem){
-					console.log($($scope.elements[$scope.x + ':' + $scope.y]));
-					console.log($scope.elements[$scope.x + ':' + $scope.y].scope());
-					/*$scope.selectedData = $($scope.elements[$scope.x + ':' + $scope.y]).scope().getData();
-					$scope.selectedItem = $($scope.elements[$scope.x + ':' + $scope.y]).scope().getItem() * 1;*/
-					//$scope.$emit('focusNavGridItemInNavGrid', $scope.elements[$scope.x + ':' + $scope.y], $($scope.elements[$scope.x + ':' + $scope.y]).scope().getData(), $scope.selectedItem = $($scope.elements[$scope.x + ':' + $scope.y]).scope().getItem());
-					/*$('.nav-grid--nav-item', $element).removeClass('active');
-					$($scope.elements[$scope.x + ':' + $scope.y]).addClass('active');*/
+				if ($attrs.loop && $attrs.loop === 'vertical') {
+
 				} else {
-					if($scope.y < 0){
-						$scope.y = 0;
-					} else if($scope.y > $scope.verticalItem - $scope.verticalOverflowItem){
-						$scope.y = $scope.verticalItem - $scope.verticalOverflowItem;
+					//$scope.verticalOverflowItem
+					if ($scope.y >= 0 && $scope.y <= $scope.verticalItem) {
+						console.log(($scope.y + $scope.scrolletTop) + ' === ' + ($scope.verticalItem - $scope.verticalOverflowItem));
+						if ($scope.y + $scope.scrolletTop === $scope.verticalItem - $scope.verticalOverflowItem) {
+							$scope.scrolletTop++;
+							$('.nav-grid--scroller').animate({
+								'marginTop': -$scope.scrolletTop * $scope.navGridItemHeight
+							}, 100);
+							setTimeout(function() {
+								$scope.getVisibleItem();
+							});
+							//$scope.y = $scope.y--;
+						}
+						if ($scope.y + $scope.scrolletTop === 0 && $scope.scrolletTop > 0) {
+							$scope.scrolletTop--;
+							$('.nav-grid--scroller').animate({
+								'marginTop': -$scope.scrolletTop * $scope.navGridItemHeight
+							}, 100);
+							setTimeout(function() {
+								$scope.getVisibleItem();
+							});
+							//$scope.y = $scope.y++;
+						}
+						$scope.$emit('focusNavGridItemInNavGrid', $scope.elements[$scope.x + ':' + $scope.y], angular.element($scope.elements[$scope.x + ':' + $scope.y]).scope().getData(), angular.element($scope.elements[$scope.x + ':' + $scope.y]).scope().getItem());
+
+					} else {
+						if ($scope.y < 0) {
+							$scope.y = 0;
+						} else if ($scope.y > $scope.verticalItem - $scope.verticalOverflowItem) {
+							$scope.y = $scope.verticalItem - $scope.verticalOverflowItem;
+						}
 					}
 				}
 			};
 
 			$scope.onKeyPress = function(code) {
-				console.log('onKeyPress');
-
 				switch (code) {
 					case RemoteService.KEY_LEFT:
 
@@ -256,13 +297,13 @@ navigation.directive('navGrid', function($parse, $injector) {
 						break;
 					case RemoteService.KEY_UP:
 						$scope.selcetUpDown(-1);
-/*						if (FocusManager.getUp($scope)) {
+						/*						if (FocusManager.getUp($scope)) {
 							return;
 						}*/
 						break;
 					case RemoteService.KEY_DOWN:
 						$scope.selcetUpDown(1);
-/*						if (FocusManager.getDown($scope)) {
+						/*						if (FocusManager.getDown($scope)) {
 							return;
 						}*/
 						break;
