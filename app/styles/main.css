@@ -77,3 +77,29 @@ body {
     border-bottom: 0;
   }
 }
+
+
+
+
+/*Navgrid style*/
+.nav-grid{
+  overflow: hidden;
+}
+.tv-container--channels-list{
+  width: 200px;
+  height: 100px;
+  border: solid 1px #e2e2e2;
+}
+.nav-grid--nav-item{
+  cursor: pointer;
+  float: left;
+  min-height: 10px;
+  display: block;
+  width: 100%;
+}
+.nav-grid--nav-item.active{
+  background-color: #e2e2e2; 
+}
+.element.active{
+  background-color: #e2e2e2;
+}

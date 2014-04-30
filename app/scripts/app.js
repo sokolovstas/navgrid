@@ -4,6 +4,9 @@ angular.module('navGridApp', [
   'ngCookies',
   'ngResource',
   'ngSanitize',
+  'navGridApp',
+  'service.remote',
+  'directives.navigation',
   'ngRoute'
 ])
   .config(function ($routeProvider) {
