@@ -9,9 +9,6 @@ angular.module('navGridApp')
 	// Set focus to nearest and strightest element in collection
 	focusManager.working = false;
 	focusManager.setFocusToNearest = function(scope, searchFunction, angleShift) {
-		console.log('>>>>>>>>>>>>>');
-		console.log(scope);
-		console.log(searchFunction);
 		if (focusManager.working) {
 			return;
 		}

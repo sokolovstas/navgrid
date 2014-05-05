@@ -34,7 +34,6 @@ local.factory('RemoteService', function($rootScope) {
 
 		// Notify about key down
 		var onkeydownhandler = function(event) {
-			console.log('onkeydownhandler');
 			notifyListeners('keydown', event);
 		};
 		// Notify about key up

@@ -13,6 +13,8 @@ angular.module('navGridApp')
 			'Alpin Bike',
 			'Atom',
 			'Author',
+			'Hare',
+			'Stern',
 			'Black One'
 		];
 		window.sl = {};
