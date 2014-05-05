@@ -31,21 +31,21 @@
     <!--<div class="container" ng-view=""></div>-->
 
     <div ng-controller="MainCtrl">
-        <div class="tv-container--channels-list" nav-grid="awesomeThings" last-y="scopeY" default-focus vertical-item="5" layout="vertical" loop="vertical" has-scroller="true" on-right="showEpg()" on-left="genresMenu(true)">
+        <div class="tv-container--channels-list" nav-grid="awesomeThings" last-y="scopeY" default-focus vertical-item="5" layout="vertical" loop="" has-scroller="true" on-right="showEpg()" on-left="genresMenu(true)">
             <div class="globall-scroller-container--scroller tv-container--channels-list-scroller">
                 <div nav-grid-scroller></div>
             </div>
             <div class="nav-grid--scroller">
-                <a class="tv-container--channel-item nav-grid--nav-item" ng-repeat="channel in navGridItems" nav-grid-item nav-grid-data="{{channel}}" nav-click="channelClick()">
+                <a class="tv-container--channel-item nav-grid--nav-item" ng-repeat="channel in navGridItems" nav-grid-item nav-item nav-grid-data="{{channel}}" nav-click="channelClick()">
                     <div>
                       {{channel}}
                     </div>
                 </a>
             </div>
         </div>
-		<div nav-item class="element">item1</div>
-		<div nav-item class="element">item1</div>
-		<div nav-item class="element">item1</div>
+        <div nav-item class="element">item1</div>
+        <div nav-item class="element">item1</div>
+        <div nav-item class="element">item1</div>
     </div>
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
     <script>
@@ -71,7 +71,8 @@
     <![endif]-->
 
     <!-- build:js scripts/vendor.js -->
-    <!-- bower:js -->
+    <!-- bower:js -->   
+    <script src="components/jquery/jquery.min.js"></script>
     <script src="components/es5-shim/es5-shim.js"></script>
     <script src="components/angular/angular.js"></script>
     <script src="components/angular-resource/angular-resource.js"></script>
@@ -83,7 +84,7 @@
     <!-- endbuild -->
 
     <!-- build:js({.tmp,app}) scripts/scripts.js -->    
-	<script src="components/jquery/jquery.min.js"></script>
+
     <script src="components/jquery.ba-throttle-debounce.js"></script>
     <script src="scripts/app.js"></script>
     <script src="scripts/controllers/main.js"></script>
