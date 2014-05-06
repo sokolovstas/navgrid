@@ -20,6 +20,32 @@
     <!-- build:css({.tmp,app}) styles/main.css -->
     <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
+    <!--[if lt IE 9]>
+    <script src="bower_components/es5-shim/es5-shim.js"></script>
+    <script src="bower_components/json3/lib/json3.min.js"></script>
+    <![endif]-->
+
+    <!-- build:js scripts/vendor.js -->
+    <!-- bower:js -->
+    <script src="components/es5-shim/es5-shim.js"></script>
+    <script src="components/angular/angular.js"></script>
+    <script src="components/angular-resource/angular-resource.js"></script>
+    <script src="components/angular-cookies/angular-cookies.js"></script>
+    <script src="components/angular-sanitize/angular-sanitize.js"></script>
+    <script src="components/angular-route/angular-route.js"></script>
+    <!-- endbower -->
+    <!-- endbuild -->
+
+    <!-- build:js({.tmp,app}) scripts/scripts.js -->
+    <script src="components/jquery/jquery.min.js"></script>
+    <script src="components/jquery.ba-throttle-debounce.js"></script>
+    <script src="scripts/app.js"></script>
+    <script src="scripts/controllers/main.js"></script>
+    <script src="scripts/directives/NavGrid.js"></script>
+    <script src="scripts/directives/FocusManager.js"></script>
+    <script src="scripts/directives/RemoteService.js"></script>
+    <!-- endbuild -->
+
 </head>
 
 <body ng-app="navGridApp">
@@ -31,14 +57,14 @@
     <!--<div class="container" ng-view=""></div>-->
 
     <div ng-controller="MainCtrl">
-        <div class="tv-container--channels-list" nav-grid="awesomeThings" last-y="0" last-x="0" default-focus horizontal-item="2" vertical-item="5" layout="vertical" loop="vertical" has-scroller="true" on-right="showEpg()" on-left="genresMenu(true)">
+        <div class="tv-container--channels-list" nav-grid="awesomeThings" last-y="0" last-x="0" default-focus horizontal-item="2" vertical-item="3" layout="vertical" loop="vertical" has-scroller="true" on-right="showEpg()" on-left="genresMenu(true)">
             <div class="globall-scroller-container--scroller tv-container--channels-list-scroller">
                 <div nav-grid-scroller></div>
             </div>
             <div class="nav-grid--scroller">
-                <a class="tv-container--channel-item nav-grid--nav-item" ng-repeat="channel in navGridItems" nav-grid-item nav-grid-data="{{channel}}" nav-click="channelClick()">
+                <a class="tv-container--channel-item nav-grid--nav-item" ng-repeat="channel in navGridItems" nav-grid-item="{{$index}}" nav-grid-data="{{channel}}" nav-click="channelClick()">
                     <div>
-                      {{channel}}
+                        {{channel}}
                     </div>
                 </a>
             </div>
@@ -65,33 +91,7 @@
     ga('send', 'pageview');
     </script>
 
-    <!--[if lt IE 9]>
-    <script src="bower_components/es5-shim/es5-shim.js"></script>
-    <script src="bower_components/json3/lib/json3.min.js"></script>
-    <![endif]-->
 
-    <!-- build:js scripts/vendor.js -->
-    <!-- bower:js -->   
-    <script src="components/jquery/jquery.min.js"></script>
-    <script src="components/es5-shim/es5-shim.js"></script>
-    <script src="components/angular/angular.js"></script>
-    <script src="components/angular-resource/angular-resource.js"></script>
-    <script src="components/angular-cookies/angular-cookies.js"></script>
-    <script src="components/angular-sanitize/angular-sanitize.js"></script>
-    <script src="components/angular-route/angular-route.js"></script>
-
-    <!-- endbower -->
-    <!-- endbuild -->
-
-    <!-- build:js({.tmp,app}) scripts/scripts.js -->    
-
-    <script src="components/jquery.ba-throttle-debounce.js"></script>
-    <script src="scripts/app.js"></script>
-    <script src="scripts/controllers/main.js"></script>
-    <script src="scripts/directives/NavGrid.js"></script>
-    <script src="scripts/directives/FocusManager.js"></script>
-    <script src="scripts/directives/RemoteService.js"></script>
-    <!-- endbuild -->
 </body>
 
 </html>
