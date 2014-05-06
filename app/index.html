@@ -57,9 +57,9 @@
     <!--<div class="container" ng-view=""></div>-->
 
     <div ng-controller="MainCtrl">
-        <div class="tv-container--channels-list" nav-grid="awesomeThings" last-y="0" last-x="0" default-focus horizontal-item="2" vertical-item="3" layout="vertical" loop="vertical" has-scroller="true" on-right="showEpg()" on-left="genresMenu(true)">
+        <div class="tv-container--channels-list" nav-grid="awesomeThings" last-y="0" last-x="0" default-focus horizontal-item="2" vertical-item="5" layout="vertical" loop="vertical" has-scroller="true">
             <div class="globall-scroller-container--scroller tv-container--channels-list-scroller">
-                <div nav-grid-scroller></div>
+                <div nav-grid-scroller horizontal=""></div>
             </div>
             <div class="nav-grid--scroller">
                 <a class="tv-container--channel-item nav-grid--nav-item" ng-repeat="channel in navGridItems" nav-grid-item="{{$index}}" nav-grid-data="{{channel}}" nav-click="channelClick()">

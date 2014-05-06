@@ -124,8 +124,8 @@ navigation.directive('navGrid', function($parse, $injector) {
 			$scope.yScroll = 0;
 			$scope.xScroll = 0;
 
-			$scope.yOverflowItem = 0;
-			$scope.xOverflowItem = 0;
+			$scope.yOverflowItem = 1;
+			$scope.xOverflowItem = 1;
 
 			$element.addClass('nav-grid');
 
@@ -201,18 +201,18 @@ navigation.directive('navGrid', function($parse, $injector) {
 
 			$scope.invalidateSize = function() {
 				if (!$scope.containerHeight || !$scope.containerWidth) {
+					$scope.containerHeight = $($element).innerHeight();
+					$scope.containerWidth = $($element).innerWidth();
 					switch ($attrs.layout) {
 						case 'vertical':
-							$scope.containerHeight = $($element).innerHeight();
+							//$scope.containerHeight = $($element).innerHeight();
 							$scope.navGridItemHeight = $('.nav-grid--nav-item', $element).eq(0).outerHeight(true);
 							break;
 						case 'horizontal':
 							$scope.navGridItemWidth = $('.nav-grid--nav-item', $element).eq(0).outerHeight(true);
-							$scope.containerWidth = $($element).innerWidth();
+							//$scope.containerWidth = $($element).innerWidth();
 							break;
 						case 'both':
-							$scope.containerHeight = $($element).innerHeight();
-							$scope.containerWidth = $($element).innerWidth();
 							$scope.navGridItemHeight = $('.nav-grid--nav-item', $element).eq(0).outerHeight(true);
 							$scope.navGridItemWidth = $('.nav-grid--nav-item', $element).eq(0).outerHeight(true);
 							break;
@@ -221,27 +221,12 @@ navigation.directive('navGrid', function($parse, $injector) {
 			};
 
 			$scope.getVisibleItem = function() {
-				//console.log(($scope.yScroll * $scope.xItems - 1) + ' , ' + ($scope.xItems * $scope.yItems + ($scope.yScroll * $scope.xItems)));
 				switch ($attrs.layout) {
 					case 'vertical':
 						$scope.navGridItems = $scope.value.slice($scope.yScroll * $scope.xItems, $scope.xItems * $scope.yItems + ($scope.yScroll * $scope.xItems));
 						break;
 					case 'horizontal':
-						console.log($scope.xScroll * $scope.yItems + ' , ' + ($scope.xItems * $scope.yItems + ($scope.xScroll * $scope.yItems)));
 						$scope.navGridItems = $scope.value.slice($scope.xScroll * $scope.yItems, $scope.xItems * $scope.yItems + ($scope.xScroll * $scope.yItems));
-						/*						$scope.emptyScroll = 0;
-						$scope.navGridItems = [];
-						for (var i = 0, len = $scope.value.length; i < len; i++) {
-							if ($scope.emptyScroll < $scope.yItemsOrigin * $scope.xScroll && !!!i % $scope.xItemsOrigin) {
-								$scope.emptyScroll++;
-								continue;
-							}
-							console.log($scope.value[i]);
-							$scope.navGridItems.push($scope.value[i]);
-							if($scope.navGridItems.length === $scope.yItems * $scope.xItems){
-								break;
-							}
-						}*/
 						break;
 				}
 
@@ -256,6 +241,9 @@ navigation.directive('navGrid', function($parse, $injector) {
 				$(element).addClass('active');
 				$scope.selectedData = data;
 				$scope.selectedItem = item;
+				setTimeout(function() {
+					$scope.$apply();
+				});
 			});
 			//Координаты элемента по клику
 			$scope.$on('setNavGridXY', function(event, element) {
@@ -268,6 +256,15 @@ navigation.directive('navGrid', function($parse, $injector) {
 				if ($scope[coordinate] - $scope[coordinate + 'Scroll'] === $scope[coordinate + 'Items'] - $scope[coordinate + 'OverflowItem']) {
 					$scope[coordinate + 'Scroll']++;
 					$scope.getVisibleItem();
+					//анимация
+					/*					$('.nav-grid--scroller').css('margin-top', -$scope.navGridItemHeight + 'px');
+					setTimeout(function(){
+						console.log('Анимация');
+						$('.nav-grid--scroller').css('transition', '');
+						$('.nav-grid--scroller').css('margin-top', '0px');
+						
+						$('.nav-grid--scroller').css('transition', 'all');
+					}, 500);*/
 				} else if ($scope[coordinate] - $scope[coordinate + 'Scroll'] === 0 && $scope[coordinate + 'Scroll'] > 0) {
 					$scope[coordinate + 'Scroll']--;
 					$scope.getVisibleItem();
@@ -276,6 +273,9 @@ navigation.directive('navGrid', function($parse, $injector) {
 
 			$scope.setFocus = function() {
 				setTimeout(function() {
+					if (!$scope.elements[$scope.x + ':' + $scope.y]) {
+						$scope.x--
+					}
 					$scope.$emit('focusNavGridItemInNavGrid', $scope.elements[$scope.x + ':' + $scope.y], angular.element($scope.elements[$scope.x + ':' + $scope.y]).scope().getData(), angular.element($scope.elements[$scope.x + ':' + $scope.y]).scope().getItem());
 				});
 			};
@@ -293,13 +293,13 @@ navigation.directive('navGrid', function($parse, $injector) {
 						$scope.getVisibleItem();
 						//Y для установки фокуса
 						$scope[coordinate]--;
-						//число элементов в полседней строке для устновки фокуса
+						/*						//число элементов в полседней строке для устновки фокуса
 						if (coordinate === 'y') {
 							$scope.lastRowColumnCount = $scope.navGridDataLength % $scope[$scope.coordinatParam + 'Items'];
 							if ($scope.lastRowColumnCount < $scope[coordinate + 'Items'] && $scope[coordinate] + 1 > $scope.lastRowColumnCount) {
 								$scope[coordinate]--;
 							}
-						}
+						}*/
 					} else if ($scope[coordinate] === Math.ceil($scope.navGridDataLength / $scope[$scope.coordinatParam + 'Items'])) {
 						$scope[coordinate] = 0;
 						$scope[coordinate + 'Scroll'] = 0;
@@ -342,6 +342,7 @@ navigation.directive('navGrid', function($parse, $injector) {
 				};
 
 				$scope[coordinate] = $scope[coordinate] + x;
+
 				if ($attrs.layout === $scope.orientationParam || $attrs.layout === 'both') {
 					if ($attrs.loop && ($attrs.loop === $scope.loopOrientatonParam || $attrs.loop === 'both')) {
 						$scope.loopFunction(x, coordinate);
@@ -354,31 +355,58 @@ navigation.directive('navGrid', function($parse, $injector) {
 				}
 			};
 
+			if ($attrs.hasScroller && $attrs.hasScroller === 'true') {
+				$scope.$watch('y', function() {
+					$scope.$broadcast('scrollWork', $scope.y);
+				});
+			}
+
 			$scope.onKeyPress = function(code) {
 				switch (code) {
 					case RemoteService.KEY_LEFT:
-						if ($scope.selcetNewNavgridItem(-1, 'x')) {
+						if ($attrs.focusLeft && $attrs.focusLeft !== '') {
+							setTimeout(function() {
+								FocusManager.setFocusToElement($($attrs.focusUp));
+								return;
+							}, 0);
+						} else if ($scope.selcetNewNavgridItem(-1, 'x')) {
 							if (FocusManager.getRight($scope)) {
 								return;
 							}
 						}
+
 						break;
 					case RemoteService.KEY_RIGHT:
-						if ($scope.selcetNewNavgridItem(1, 'x')) {
+						if ($attrs.focusRight && $attrs.focusRight !== '') {
+							setTimeout(function() {
+								FocusManager.setFocusToElement($($attrs.focusRight));
+								return;
+							}, 0);
+						} else if ($scope.selcetNewNavgridItem(1, 'x')) {
 							if (FocusManager.getRight($scope)) {
 								return;
 							}
 						}
 						break;
 					case RemoteService.KEY_UP:
-						if ($scope.selcetNewNavgridItem(-1, 'y')) {
+						if ($attrs.focusUp && $attrs.focusUp !== '') {
+							setTimeout(function() {
+								FocusManager.setFocusToElement($($attrs.focusUp));
+								return;
+							}, 0);
+						} else if ($scope.selcetNewNavgridItem(-1, 'y')) {
 							if (FocusManager.getUp($scope)) {
 								return;
 							}
 						}
 						break;
 					case RemoteService.KEY_DOWN:
-						if ($scope.selcetNewNavgridItem(1, 'y')) {
+						if ($attrs.focusDown && $attrs.focusDown !== '') {
+							setTimeout(function() {
+								FocusManager.setFocusToElement($($attrs.focusDown));
+								return;
+							}, 0);
+						} else if ($scope.selcetNewNavgridItem(1, 'y')) {
 							if (FocusManager.getDown($scope)) {
 								return;
 							}
@@ -446,6 +474,17 @@ navigation.directive('navGrid', function($parse, $injector) {
 				}
 			});
 
+			$scope.$on('scrollUp', function(event) {
+				$scope.onKeyPress(RemoteService.KEY_UP);
+			});
+			$scope.$on('scrollDown', function(event) {
+				$scope.onKeyPress(RemoteService.KEY_DOWN);
+			});
+			$scope.$on('getItemLength', function(event) {
+				$scope.$broadcast('returnItemLength', $scope.navGridDataLength, $scope.containerHeightInPixels, $attrs.horizontalItem);
+			});
+
+
 			/*			$scope.throttle = $attrs.throttle || 10;
 			$scope.throttledDown3 = $.throttle($scope.throttle * 10, true, $scope.onKeyPress);
 			$scope.throttledDown2 = $.throttle($scope.throttle * 5, true, $scope.onKeyPress);
@@ -478,464 +517,6 @@ navigation.directive('navGrid', function($parse, $injector) {
 
 			RemoteService.bindKeyDown($scope.onKeyPressWrapper, $scope);
 			RemoteService.bindKeyUp($scope.onKeyUpWrapper, $scope);
-
-
-			/*			RemoteService.bindKeyDown($scope.onKeyPressWrapper, $scope);
-			RemoteService.bindKeyUp($scope.onKeyUpWrapper, $scope);*/
-
-
-
-
-			//Get params
-			//coordinate
-			/*			$scope.layout = $attrs.layout || 'vertical';
-
-			//list loop
-			$scope.loop = $attrs.loop;
-			$scope.throttle = $attrs.throttle || 10;
-
-			$scope.width = $scope.height = 0;
-
-			// Get width and height
-			$scope.containerWidthInPixels = $element.innerWidth();
-			$scope.containerHeightInPixels = $element.innerHeight();*/
-
-			// Total length of list
-
-
-
-			/*			$scope.$watch(function() {
-				return $('.nav-grid--nav-item-new', $scope.scroller).length;
-			}, function(value) {
-				$scope.elements = [];
-				if ($scope.navGridData) {
-					$scope.navGridDataLength = $scope.navGridData.length;
-				} else {
-					$scope.navGridDataLength = 0;
-				}
-				console.log('reinit');
-				var items = $('.nav-grid--nav-item-new', $scope.scroller);
-				for (var i = 0; i < items.length; i++) {
-					$(items[i]).scope().reinit();
-				}
-				$scope.$broadcast('returnItemLength', $scope.navGridDataLength, $scope.containerHeightInPixels, $scope.containerWidth);
-			});*/
-
-			/*			$scope.lockScroll = false;
-			$rootScope.$on('scrollTimeBlock', function() {
-				if (!$scope.lockScroll) {
-					$scope.lockScroll = true;
-				} else {
-					$scope.lockScroll = false;
-				}
-
-			});*/
-
-			/*$scope.onSetFocus = function() {
-				if ($element.attr('on-active')) {
-					$parse($element.attr('on-active'))($scope);
-				}
-				if ($scope.elements[$scope.x + ':' + $scope.y]) {
-					$scope.elements[$scope.x + ':' + $scope.y].addClass('active');
-				} else {
-					if ($scope.elements['1:1']) {
-						$scope.x = $scope.y = 1;
-						$scope.scrollX = 0;
-						$scope.scrollY = 0;
-						$($scope.scroller).css('margin', '0px');
-						setTimeout(function() {
-							$scope.invalidateItems();
-							$scope.invalidateSelection();
-							$scope.$apply();
-						});
-					}
-				}
-			};
-			$scope.onClearFocus = function() {
-				if ($element.attr('on-deactive')) {
-					$parse($element.attr('on-deactive'))($scope);
-				}
-				if ($scope.elements[$scope.x + ':' + $scope.y]) {
-					$scope.elements[$scope.x + ':' + $scope.y].removeClass('active');
-				}
-			};
-			$scope.onKeyPressWrapper = function(code) {
-				if (code === RemoteService.SCROLL_UP || code === RemoteService.SCROLL_DOWN) {
-					$scope.onKeyPress(code);
-				} else {
-					if ($scope.pressedCount > 8) {
-						$scope.throttledDown2(code);
-					} else if ($scope.pressedCount > 0) {
-						$scope.throttledDown3(code);
-					} else if ($scope.pressedCount === 0) {
-						$scope.onKeyPress(code);
-					}
-				}
-			};
-
-			$scope.onKeyPress = function(code) {
-				if (!$scope.focused || $scope.lockScroll) {
-					return;
-				}
-				$scope.pressedCount++;
-				var checkSpan = false;
-				var oldX = $scope.x;
-				var oldY = $scope.y;
-				// Remove old focus
-				if ($scope.elements[$scope.x + ':' + $scope.y]) {
-					$scope.elements[$scope.x + ':' + $scope.y].removeClass('active');
-				}
-				switch (code) {
-					case RemoteService.KEY_LEFT:
-						if ($attrs.whirligig && $attrs.whirligig === '1') {
-							$scope.whirligigScroll = 'left';
-						}
-						if ($element.attr('on-left')) {
-							$parse($element.attr('on-left'))($scope);
-						} else if ($attrs.focusLeft && $attrs.focusLeft !== '') {
-							setTimeout(function() {
-								FocusManager.setFocusToElement($($attrs.focusLeft));
-								return;
-							}, 0);
-							FocusManager.setFocusToElement($($attrs.focusLeft));
-							return;
-						} else {
-							$scope.x--;
-							if ($scope.x < 1) {
-								if ($scope.loop === 'horizontal' || $scope.loop === 'both') {
-									$scope.x = $scope.width;
-									$scope.scrollX = $scope.x - $scope.containerWidth;
-								} else {
-									$scope.x = 1;
-									if (FocusManager.getLeft($scope)) {
-										return;
-									}
-								}
-							} else {
-								checkSpan = true;
-							}
-						}
-
-						break;
-					case RemoteService.KEY_RIGHT:
-						if ($attrs.whirligig && $attrs.whirligig === '1') {
-							$scope.whirligigScroll = 'right';
-						}
-						if ($element.attr('on-right')) {
-							$parse($element.attr('on-right'))($scope);
-						} else if ($attrs.focusRight && $attrs.focusRight !== '') {
-							setTimeout(function() {
-								FocusManager.setFocusToElement($($attrs.focusRight));
-								return;
-							}, 0);
-							FocusManager.setFocusToElement($($attrs.focusRight));
-							return;
-						} else {
-							$scope.x++;
-							if ($scope.x > $scope.width || ($scope.y === $scope.height && $scope.containerWidth * ($scope.height - 1) + $scope.x > $scope.navGridDataLength)) {
-								if ($scope.loop === 'horizontal' || $scope.loop === 'both') {
-									$scope.x = 1;
-									$scope.scrollX = 0;
-								} else {
-									$scope.x = $scope.width;
-									if (FocusManager.getRight($scope)) {
-										return;
-									}
-								}
-							} else {
-								checkSpan = true;
-							}
-						}
-
-						break;
-					case RemoteService.KEY_UP:
-						if ($attrs.focusUp && $attrs.focusUp !== '') {
-							setTimeout(function() {
-								FocusManager.setFocusToElement($($attrs.focusUp));
-								return;
-							}, 0);
-							FocusManager.setFocusToElement($($attrs.focusUp));
-							return;
-						} else if ($scope.y === 1 && $attrs.scrollLock === 'lock') {
-							FocusManager.setFocusToElement($('.' + $element[0].lastElementChild.className + ' >a').eq(0));
-							return;
-						} else {
-							$scope.y--;
-							if ($scope.y < 1) {
-								if ($scope.loop === 'vertical' || $scope.loop === 'both') {
-									$scope.y = $scope.height;
-									$scope.scrollY = $scope.y - $scope.containerHeight;
-								} else {
-									$scope.y = 1;
-									if (FocusManager.getUp($scope)) {
-										return;
-									}
-								}
-
-							} else {
-								checkSpan = true;
-							}
-						}
-
-						break;
-					case RemoteService.KEY_DOWN:
-						if ($attrs.focusDown && $attrs.focusDown !== '') {
-							setTimeout(function() {
-								FocusManager.setFocusToElement($($attrs.focusDown));
-								return;
-							}, 0);
-						} else if ($scope.y === $scope.navGridDataLength && $attrs.scrollLock === 'lock') {
-							FocusManager.setFocusToElement($('.' + $element[0].lastElementChild.className + ' >a').eq($scope.navGridDataLength - 1));
-							return;
-						} else {
-							$scope.y++;
-							if ($scope.y > $scope.height || ($scope.x === $scope.width && $scope.containerHeight * ($scope.width - 1) + $scope.y > $scope.navGridDataLength)) {
-								if ($scope.loop === 'vertical' || $scope.loop === 'both') {
-									$scope.y = 1;
-									$scope.scrollY = 0;
-								} else {
-									$scope.y = $scope.height;
-									if (FocusManager.getDown($scope)) {
-										return;
-									}
-								}
-							} else {
-								checkSpan = true;
-							}
-						}
-
-						break;
-					case RemoteService.SCROLL_UP:
-						if ($scope.layout === 'horizontal') {
-							$scope.onKeyPress(RemoteService.KEY_LEFT);
-						}
-						if ($scope.layout === 'vertical') {
-							$scope.onKeyPress(RemoteService.KEY_UP);
-						}
-
-						break;
-					case RemoteService.SCROLL_DOWN:
-						if ($scope.layout === 'horizontal') {
-							$scope.onKeyPress(RemoteService.KEY_RIGHT);
-						}
-						if ($scope.layout === 'vertical') {
-							$scope.onKeyPress(RemoteService.KEY_DOWN);
-						}
-
-						break;
-					case RemoteService.ENTER:
-						var selectedElement = $scope.elements[$scope.x + ':' + $scope.y];
-						if (selectedElement.attr('href')) {
-							window.location.href = selectedElement.attr('href');
-						} else {
-							selectedElement.trigger('click');
-							selectedElement.trigger('enter');
-						}
-						break;
-				}
-				if (checkSpan) {
-					if ($scope.elements[$scope.x + ':' + $scope.y] === $scope.elements[oldX + ':' + oldY]) {
-						$scope.onKeyPress(code);
-						return;
-					}
-				}
-
-				var element = $($scope.elements[$scope.x + ':' + $scope.y]);
-				if (element.offsetWidth > 0 || element.offsetHeight > 0) {
-					$scope.onKeyPress(code);
-				}
-
-				// Scroll container
-
-				if ($scope.layout === 'horizontal') {
-					if ($scope.x + $scope.rightScrollMargin > $scope.containerWidth + $scope.scrollX) {
-						$scope.scrollX++;
-					}
-					if ($scope.x - $scope.leftScrollMargin - 1 < $scope.scrollX) {
-						$scope.scrollX--;
-					}
-				}
-				if ($scope.layout === 'vertical') {
-					if ($scope.y + $scope.rightScrollMargin > $scope.containerHeight + $scope.scrollY) {
-						$scope.scrollY++;
-					}
-					if ($scope.y - $scope.leftScrollMargin - 1 < $scope.scrollY) {
-						$scope.scrollY--;
-					}
-				}
-
-				$scope.scrollY = Math.max($scope.scrollY, 0);
-				$scope.scrollX = Math.max($scope.scrollX, 0);
-
-				$scope.invalidateItems();
-
-				// If key holded more than 8 presses than remove animation
-				if ($scope.pressedCount > 8) {
-					$($scope.scroller).css('transition', 'none');
-				}
-
-				//if ($scope.y > $scope.containerHeight || $scope.navGridDataLength > $scope.containerHeight) {
-				if ($scope.navGridDataLength > $scope.containerHeight) {
-					$($scope.scroller).css('margin-top', (-$scope.scrollY * $scope.elementHeight) + 'px');
-				}
-				if ($scope.navGridDataLength > $scope.containerWidth && !($attrs.whirligig && $attrs.whirligig === '1')) {
-					$($scope.scroller).css('margin-left', (-$scope.scrollX * $scope.elementWidth) + 'px');
-				} else if ($attrs.whirligig && $attrs.whirligig === '1') {
-
-					if ($scope.whirligigScroll === 'left' && $scope.x === 4 && $scope.scrollX === 2) {
-						$scope.scrollX = $scope.navGridDataOriginalLength + 2;
-						$scope.x = $scope.scrollX + 2;
-					}
-
-					if ($scope.scrollX === 1 && $scope.x && $scope.whirligigScroll === 'left') {
-						$scope.x = $scope.navGridDataOriginalLength + 3;
-						$scope.scrollX = $scope.x - 2;
-					}
-
-					if ($scope.whirligigScroll === 'right' && $scope.scrollX > 2 && ($scope.scrollX - $scope.navGridDataOriginalLength) === 2) {
-						$scope.x = 4;
-						$scope.scrollX = 2;
-					}
-
-					if ($scope.whirligigScroll === 'right' && ($scope.x - $scope.navGridDataOriginalLength) === 5) {
-						$scope.x = $scope.navGridDataOriginalLength;
-						$scope.scrollX = $scope.x - 2;
-					}
-					$scope.invalidateItems();
-					$($scope.scroller).css('margin-left', (-$scope.scrollX * $scope.elementWidth) + 'px');
-				}
-
-				// Limit index at the end of list, if on last row index on X doesn't exist move it to last item
-				if ($scope.layout === 'horizontal') {
-					if ($scope.x === $scope.width) {
-						if ($scope.containerHeight * ($scope.width - 1) + $scope.y > $scope.navGridDataLength) {
-							$scope.y = $scope.navGridDataLength - $scope.containerHeight * ($scope.width - 1);
-						}
-					}
-				}
-				if ($scope.layout === 'vertical') {
-					if ($scope.y === $scope.height) {
-						if ($scope.containerWidth * ($scope.height - 1) + $scope.x > $scope.navGridDataLength) {
-							$scope.x = $scope.navGridDataLength - $scope.containerWidth * ($scope.height - 1);
-						}
-					}
-				}
-				// Set focus on new item
-				$($scope.elements[$scope.x + ':' + $scope.y]).addClass('active');
-
-
-				$scope.invalidateSelection();
-
-				if ($scope.$root.$$phase !== '$apply' && $scope.$root.$$phase !== '$digest') {
-					$scope.$apply();
-				}
-			};*/
-
-			/*			$scope.invalidateSelection = function() {
-				if (!$scope.elements[$scope.x + ':' + $scope.y] || !$scope.elements[$scope.x + ':' + $scope.y].scope()) {
-					return;
-				}
-				$scope.selectedData = $($scope.elements[$scope.x + ':' + $scope.y]).scope().getData();
-				$scope.selectedItem = $($scope.elements[$scope.x + ':' + $scope.y]).scope().getItem() * 1;
-				var classes = $attrs.class.split(' ');
-				for (var i in classes) {
-					$scope.$emit(classes[i] + ':navGridChangePosition', $scope);
-				}
-				$scope.$emit('navGridChangePosition', $scope);
-			};*/
-
-			/*			$scope.invalidateItems = function() {
-				if ($scope.navGridData) {
-					if ($scope.layout === 'vertical') {
-						$scope.startItem = ($scope.scrollY - 1) * $scope.containerWidth;
-						$scope.currentItem = Math.max($scope.startItem + 1, 1) + $scope.x - 1 + ($scope.y - 1 - Math.max($scope.scrollY - 1, 0)) * $scope.containerWidth;
-						$scope.navGridItems = $scope.navGridData.slice(Math.max($scope.startItem, 0), ($scope.scrollY + 1) * $scope.containerWidth + $scope.itemsLimit);
-					}
-					if ($scope.layout === 'horizontal') {
-						$scope.navGridItems = $scope.navGridData.slice(Math.max(($scope.scrollX - 1) * $scope.containerHeight, 0), ($scope.scrollX + 1) * $scope.containerHeight + $scope.itemsLimit);
-					}
-				}
-			};*/
-
-			/*$scope.onKeyUpWrapper = function(code) {
-				if (code === RemoteService.SCROLL_UP || code === RemoteService.SCROLL_DOWN) {
-					$scope.onKeyUp(code);
-				} else {
-					$scope.throttledUp(code);
-				}
-			};
-			$scope.onKeyUp = function(code) {
-				if (!$scope.focused) {
-					return;
-				}
-				$($scope.scroller).css('transition', '');
-				$scope.pressedCount = 0;
-			};
-
-			$scope.$on('getFocusSelectedData', function(event, data, item) {
-				$scope.selectedData = data;
-				$scope.selectedItem = item;
-				var classes = $attrs.class.split(' ');
-				for (var i in classes) {
-					$scope.$emit(classes[i] + ':navGridChangePosition', $scope);
-				}
-				$scope.$emit('navGridChangePosition', $scope);
-			});
-
-
-			$scope.$on('focusNavGridItemInNavGrid', function(event, element) {
-				for (var i in $scope.elements) {
-					if ($scope.elements[i] === element) {
-						if ($scope.elements[$scope.x + ':' + $scope.y]) {
-							$scope.elements[$scope.x + ':' + $scope.y].removeClass('active');
-						}
-						$scope.x = Number(i.split(':')[0]);
-						$scope.y = Number(i.split(':')[1]);
-						$scope.elements[$scope.x + ':' + $scope.y].addClass('active');
-						$scope.$emit('navGridChangePosition', $scope);
-					}
-				}
-			});
-
-			// Bind to remote service and listen for key press
-			$scope.throttledDown3 = $.throttle($scope.throttle * 10, true, $scope.onKeyPress);
-			$scope.throttledDown2 = $.throttle($scope.throttle * 5, true, $scope.onKeyPress);
-			$scope.throttledDown = $.throttle($scope.throttle, true, $scope.onKeyPress);
-			$scope.throttledUp = $.throttle($scope.throttle, true, $scope.onKeyUp);
-
-			RemoteService.bindKeyDown($scope.onKeyPressWrapper, $scope);
-			RemoteService.bindKeyUp($scope.onKeyUpWrapper, $scope);
-
-			if ($attrs.hasScroller && $attrs.hasScroller === 'true') {
-				$scope.$watch('y', function() {
-					$scope.$broadcast('scrollWork', $scope.y);
-				});
-			}
-			$scope.$on('scrollUp', function(event) {
-				$scope.onKeyPress(RemoteService.KEY_UP);
-			});
-			$scope.$on('scrollDown', function(event) {
-				$scope.onKeyPress(RemoteService.KEY_DOWN);
-			});
-			$scope.$on('getItemLength', function(event) {
-				$scope.$broadcast('returnItemLength', $scope.navGridDataLength, $scope.containerHeightInPixels, $scope.containerWidth);
-			});
-
-			$scope.$on('$destroy', function() {
-				RemoteService.unbindKeyDown($scope.onKeyPressWrapper, $scope);
-				RemoteService.unbindKeyUp($scope.onKeyUpWrapper, $scope);
-
-				$scope.scroller = null;
-				for (var i in $scope.elements) {
-					$scope.elements[i].remove();
-
-					$scope.elements[i] = null;
-
-					$element.off();
-
-					delete $scope.elements[i];
-				}
-			});*/
 		},
 		compile: function compile(tElement, tAttrs, transclude) {
 			return function postLink(scope, iElement, iAttrs, controller) {
@@ -1062,6 +643,58 @@ navigation.directive('navItem', function($injector, $location, FocusManager) {
 						});
 					});*/
 				}
+			};
+		}
+	};
+});
+
+navigation.directive('navGridScroller', function($interpolate) {
+	return {
+		priority: 0,
+		restrict: 'A',
+		templateUrl: 'scroller.html',
+		scope: true,
+		controller: function controller($scope, $element, $attrs) {
+			var _scrollerContainerHeight;
+
+			if ($attrs.horizontal && $attrs.horizontal === 'horizontal') {
+
+			} else {
+				$element.addClass('global-scroll--vertical');
+				$scope._scrollerContainerHeight = $scope.containerHeight + 'px';
+			}
+
+			$scope._scrollerClickTop = function() {
+				$scope.$emit('scrollUp');
+			};
+			$scope._scrollerClickDown = function() {
+				$scope.$emit('scrollDown');
+			};
+
+			$scope.$on('returnItemLength', function(event, length, height, rowItem) {
+				//$scope._scrollerContainerHeight = height - 108;
+
+				//Число строк в навгриде
+				$scope.rows = Math.ceil(length / rowItem);
+				if ($scope.rows === 1) {
+					$scope._scrollerHeight = $scope._scrollerContainerHeight;
+				} else {
+					_scrollerContainerHeight = parseInt($scope._scrollerContainerHeight);
+					$scope._scrollerHeight = (Number(_scrollerContainerHeight) / Number($scope.rows) < 50) ? (50 + 'px') : (parseInt(Number(_scrollerContainerHeight) / Number($scope.rows), 10)) + 'px';
+				}
+				$scope.progressStep = (_scrollerContainerHeight - parseInt($scope._scrollerHeight, 10)) / ($scope.rows - 1);
+			});
+			$scope.$on('scrollWork', function(event, currItem) {
+				$scope._scrollerTop = $scope.progressStep * currItem + 'px';
+			});
+			$scope.$on('$destroy', function() {
+				$element.remove();
+			});
+			$scope.$emit('getItemLength');
+		},
+		compile: function compile(tElement, tAttrs, transclude) {
+			return function postLink(scope, iElement, iAttrs, controller) {
+
 			};
 		}
 	};

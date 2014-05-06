@@ -1,108 +1,168 @@
 /* Space out content a bit */
-body {
-  padding-top: 20px;
-  padding-bottom: 20px;
+ body {
+    padding-top: 20px;
+    padding-bottom: 20px;
 }
-
 /* Everything but the jumbotron gets side spacing for mobile first views */
-.header,
-.marketing,
-.footer {
-  padding-left: 15px;
-  padding-right: 15px;
+ .header, .marketing, .footer {
+    padding-left: 15px;
+    padding-right: 15px;
 }
-
 /* Custom page header */
-.header {
-  border-bottom: 1px solid #e5e5e5;
+ .header {
+    border-bottom: 1px solid #e5e5e5;
 }
 /* Make the masthead heading the same height as the navigation */
-.header h3 {
-  margin-top: 0;
-  margin-bottom: 0;
-  line-height: 40px;
-  padding-bottom: 19px;
+ .header h3 {
+    margin-top: 0;
+    margin-bottom: 0;
+    line-height: 40px;
+    padding-bottom: 19px;
 }
-
 /* Custom page footer */
-.footer {
-  padding-top: 19px;
-  color: #777;
-  border-top: 1px solid #e5e5e5;
+ .footer {
+    padding-top: 19px;
+    color: #777;
+    border-top: 1px solid #e5e5e5;
 }
-
 /* Customize container */
-@media (min-width: 768px) {
-  .container {
-    max-width: 730px;
-  }
+ @media (min-width: 768px) {
+    .container {
+        max-width: 730px;
+    }
 }
 .container-narrow > hr {
-  margin: 30px 0;
+    margin: 30px 0;
 }
-
 /* Main marketing message and sign up button */
-.jumbotron {
-  text-align: center;
-  border-bottom: 1px solid #e5e5e5;
+ .jumbotron {
+    text-align: center;
+    border-bottom: 1px solid #e5e5e5;
 }
 .jumbotron .btn {
-  font-size: 21px;
-  padding: 14px 24px;
+    font-size: 21px;
+    padding: 14px 24px;
 }
-
 /* Supporting marketing content */
-.marketing {
-  margin: 40px 0;
+ .marketing {
+    margin: 40px 0;
 }
 .marketing p + h4 {
-  margin-top: 28px;
+    margin-top: 28px;
 }
-
 /* Responsive: Portrait tablets and up */
-@media screen and (min-width: 768px) {
-  /* Remove the padding we set earlier */
-  .header,
-  .marketing,
-  .footer {
-    padding-left: 0;
-    padding-right: 0;
-  }
-  /* Space out the masthead */
-  .header {
-    margin-bottom: 30px;
-  }
-  /* Remove the bottom border on the jumbotron for visual effect */
-  .jumbotron {
-    border-bottom: 0;
-  }
+ @media screen and (min-width: 768px) {
+    /* Remove the padding we set earlier */
+    .header, .marketing, .footer {
+        padding-left: 0;
+        padding-right: 0;
+    }
+    /* Space out the masthead */
+    .header {
+        margin-bottom: 30px;
+    }
+    /* Remove the bottom border on the jumbotron for visual effect */
+    .jumbotron {
+        border-bottom: 0;
+    }
 }
-
-
-
-
 /*Navgrid style*/
-.nav-grid{
-  overflow: hidden;
+ .nav-grid {
+    overflow: hidden;
+    position: relative;
 }
-.tv-container--channels-list{
-  width: 400px;
-  height: 60px;
-  border: solid 1px #e2e2e2;
+.tv-container--channels-list {
+    width: 400px;
+    height: 100px;
+    border: solid 1px #e2e2e2;
+    padding-right: 54px;
+    /*padding-bottom: 54px;*/
 }
-.nav-grid--nav-item{
-  cursor: pointer;
-  float: left;
-  min-height: 10px;
-  display: block;
-  width:200px;
+.nav-grid--scroller {
+    transition: all;
+    transition-duration: 0.5s;
 }
-.nav-grid--nav-item.active{
-  background-color: #e2e2e2; 
+.nav-grid--nav-item {
+    cursor: pointer;
+    float: left;
+    min-height: 10px;
+    display: block;
+    width:200px;
 }
-.element.active{
-  background-color: #e2e2e2;
+.nav-grid--nav-item.active {
+    background-color: #e2e2e2;
 }
-.tv-container.active{
-  color: red;
+.element.active {
+    background-color: #e2e2e2;
+}
+.tv-container.active {
+    color: red;
+}
+.global-scroll--vertical {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+}
+.global-scroll--vertical > .global-scroll--wrapper {
+    width: 54px;
+}
+.global-scroll--vertical .global-scroll--button-top, .global-scroll--vertical .global-scroll--button-down {
+    width: 54px;
+    height: 54px;
+    background-color: #000000;
+    cursor: pointer;
+    display: none;
+    /*background-image: image-url('scroll-btn.png');*/
+}
+.global-scroll--vertical .global-scroll--button-top {
+    background-position: top center;
+}
+.global-scroll--vertical .global-scroll--button-down {
+    background-position: bottom center;
+}
+.global-scroll--vertical .global-scroll--scroll-container {
+    width: 20px;
+    background-color: #000000;
+    margin: 0 auto;
+}
+.global-scroll--vertical .global-scroll--button-scroller {
+    background-color: #e2e2e2;
+    width: 10px;
+    height: 50px;
+    margin: 0 auto;
+    position: relative;
+}
+.global-scroll--horizontal {
+    position: absolute;
+    left: 0px;
+    bottom: 0px;
+}
+.global-scroll--horizontal > .global-scroll--wrapper {
+    width: 54px;
+}
+.global-scroll--horizontal .global-scroll--button-top, .global-scroll--horizontal .global-scroll--button-down {
+    width: 54px;
+    height: 54px;
+    background-color: #000000;
+    cursor: pointer;
+    display: none;
+    /*background-image: image-url('scroll-btn.png');*/
+}
+.global-scroll--horizontal .global-scroll--button-top {
+    background-position: top center;
+}
+.global-scroll--horizontal .global-scroll--button-down {
+    background-position: bottom center;
+}
+.global-scroll--horizontal .global-scroll--scroll-container {
+    width: 20px;
+    background-color: #000000;
+    margin: 0 auto;
+}
+.global-scroll--horizontal .global-scroll--button-scroller {
+    background-color: #e2e2e2;
+    width: 10px;
+    height: 50px;
+    margin: 0 auto;
+    position: relative;
 }
