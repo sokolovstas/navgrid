@@ -73,10 +73,10 @@
 }
 .tv-container--channels-list {
     width: 400px;
-    height: 20px;
+    height: 100px;
     border: solid 1px #e2e2e2;
     padding-right: 0px;
-    padding-bottom: 54px;
+  /*  padding-bottom: 54px;*/
 }
 .nav-grid--scroller {
     transition: all;

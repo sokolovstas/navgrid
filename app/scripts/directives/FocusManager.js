@@ -133,7 +133,6 @@ angular.module('navGridApp')
 				});
 			}
 		}
-		console.log(focusManager.items);
 	};
 	focusManager.unregisterNavItem = function(scope) {
 		focusManager.items.splice(focusManager.items.indexOf(scope), 1);

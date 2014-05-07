@@ -7,17 +7,13 @@ var NavItemController = function controller($scope, $element, $attrs, $interpola
 	$scope.setFocus = function() {
 		$element.addClass('active');
 		$scope.focused = true;
-		console.log($scope);
 		if ($scope.onSetFocus) {
-			console.log('$scope.onSetFocus');
 			$scope.onSetFocus();
 		}
 	};
 	$scope.clearFocus = function() {
 		$element.removeClass('active');
 		$scope.focused = false;
-		console.log('$scope.clearFocus');
-		console.log($scope);
 		if ($scope.onClearFocus) {
 			$scope.onClearFocus();
 		}
@@ -49,7 +45,6 @@ var NavItemController = function controller($scope, $element, $attrs, $interpola
 };
 
 
-
 navigation.directive('navGridItem', function($interpolate, $parse, RemoteService, FocusManager) {
 	return {
 		priority: 0,
@@ -66,7 +61,7 @@ navigation.directive('navGridItem', function($interpolate, $parse, RemoteService
 					} else {
 						if (!iElement.hasClass('active')) {
 							scope.$emit('focusNavGridItemInNavGrid', iElement, scope.getData(), scope.getItem());
-							scope.$emit('setNavGridXY', iElement);
+							scope.$emit('setNavGridXY', scope.getItem());
 							event.preventDefault();
 							event.stopPropagation();
 						} else {
@@ -107,8 +102,6 @@ navigation.directive('navGridItem', function($interpolate, $parse, RemoteService
 		}
 	};
 });
-
-
 
 
 navigation.directive('navGrid', function($parse, $injector) {
@@ -217,12 +210,10 @@ navigation.directive('navGrid', function($parse, $injector) {
 					$scope.containerWidth = $($element).innerWidth();
 					switch ($attrs.layout) {
 						case 'vertical':
-							//$scope.containerHeight = $($element).innerHeight();
 							$scope.navGridItemHeight = $('.nav-grid--nav-item', $element).eq(0).outerHeight(true);
 							break;
 						case 'horizontal':
 							$scope.navGridItemWidth = $('.nav-grid--nav-item', $element).eq(0).outerHeight(true);
-							//$scope.containerWidth = $($element).innerWidth();
 							break;
 						case 'both':
 							$scope.navGridItemHeight = $('.nav-grid--nav-item', $element).eq(0).outerHeight(true);
@@ -248,20 +239,27 @@ navigation.directive('navGrid', function($parse, $injector) {
 				});
 			};
 
+			$scope.navGridChangePosition = function(){
+				var classes = $attrs.class.split(' ');
+				for (var i in classes) {
+					$scope.$emit(classes[i] + ':navGridChangePosition', $scope);
+				}
+			};
+
 			$scope.$on('focusNavGridItemInNavGrid', function(event, element, data, item) {
 				$('.nav-grid--nav-item', $element).removeClass('active');
 				$(element).addClass('active');
 				$scope.selectedData = data;
 				$scope.selectedItem = item;
+				$scope.navGridChangePosition();
 				setTimeout(function() {
 					$scope.$apply();
 				});
 			});
 			//Координаты элемента по клику
 			$scope.$on('setNavGridXY', function(event, element) {
-				var index = $(element).index();
-				$scope.y = index / $scope.xItems | 0;
-				$scope.x = index - $scope.y * $scope.xItems;
+				$scope.y = element / $scope.xItems | 0;
+				$scope.x = element - $scope.y * $scope.xItems;
 			});
 
 			$scope.rebuildList = function(coordinate) {
@@ -283,13 +281,12 @@ navigation.directive('navGrid', function($parse, $injector) {
 				}
 			};
 
-			$scope.setFocus = function() {
+			$scope.setFocusNavGridItem = function() {
 				setTimeout(function() {
 					if (!$scope.elements[$scope.x + ':' + $scope.y]) {
 						$scope.x--
 					}
 					$scope.$emit('focusNavGridItemInNavGrid', $scope.elements[$scope.x + ':' + $scope.y], angular.element($scope.elements[$scope.x + ':' + $scope.y]).scope().getData(), angular.element($scope.elements[$scope.x + ':' + $scope.y]).scope().getItem());
-					//$scope.$emit('focusNavGridItemInNavGrid', $scope.elements[$scope.x + ':' + $scope.y], $scope.elements[$scope.x + ':' + $scope.y].scope().getData(), $scope.elements[$scope.x + ':' + $scope.y]).scope().getItem();
 				});
 			};
 
@@ -319,14 +316,14 @@ navigation.directive('navGrid', function($parse, $injector) {
 						$scope.getVisibleItem();
 					}
 				}
-				$scope.setFocus();
+				$scope.setFocusNavGridItem();
 				return false;
 			};
 
 			$scope.noLoopFunction = function(x, coordinate) {
 				if ($scope[coordinate] >= 0 && $scope[coordinate] < Math.ceil($scope.navGridDataLength / $scope[$scope.coordinatParam + 'Items'])) {
 					$scope.rebuildList(coordinate);
-					$scope.setFocus();
+					$scope.setFocusNavGridItem();
 				} else {
 					$scope[coordinate] = $scope[coordinate] - x;
 				}
@@ -335,7 +332,7 @@ navigation.directive('navGrid', function($parse, $injector) {
 
 			$scope.changeNavgridFocusPosition = function(x, coordinate) {
 				if ($scope[coordinate] >= 0 && $scope[coordinate] < $scope[coordinate + 'Items']) {
-					$scope.setFocus();
+					$scope.setFocusNavGridItem();
 					return false
 				} else {
 					$scope[coordinate] = $scope[coordinate] - x;
@@ -460,7 +457,7 @@ navigation.directive('navGrid', function($parse, $injector) {
 						if (!$scope.elements[$scope.x + ':' + $scope.y]) {
 							$scope.yScroll = $scope.y - ($scope.yItems - $scope.yOverflowItem);
 							$scope.rebuildList('y');
-							$scope.setFocus();
+							$scope.setFocusNavGridItem();
 						}
 					});
 				}
@@ -477,7 +474,7 @@ navigation.directive('navGrid', function($parse, $injector) {
 						if (!$scope.elements[$scope.x + ':' + $scope.y]) {
 							$scope.yScroll = $scope.x - ($scope.yItems - $scope.xOverflowItem);
 							$scope.rebuildList('x');
-							$scope.setFocus();
+							$scope.setFocusNavGridItem();
 						}
 					});
 				}
@@ -530,7 +527,6 @@ navigation.directive('navGrid', function($parse, $injector) {
 			// Bind to remote service and listen for key press
 
 			$scope.bindKeyPress = function(){
-				console.log($scope.bindKeyPress);
 				RemoteService.bindKeyDown($scope.onKeyPressWrapper, $scope);
 				RemoteService.bindKeyUp($scope.onKeyUpWrapper, $scope);
 			};
@@ -550,7 +546,7 @@ navigation.directive('navGrid', function($parse, $injector) {
 				}
 				FocusManager.clearFocus();
 				$scope.bindKeyPress();
-				$scope.setFocus();
+				$scope.setFocusNavGridItem();
 			};
 
 			$scope.onClearFocus = function() {
