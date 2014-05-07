@@ -7,13 +7,17 @@ var NavItemController = function controller($scope, $element, $attrs, $interpola
 	$scope.setFocus = function() {
 		$element.addClass('active');
 		$scope.focused = true;
+		console.log($scope);
 		if ($scope.onSetFocus) {
+			console.log('$scope.onSetFocus');
 			$scope.onSetFocus();
 		}
 	};
 	$scope.clearFocus = function() {
 		$element.removeClass('active');
 		$scope.focused = false;
+		console.log('$scope.clearFocus');
+		console.log($scope);
 		if ($scope.onClearFocus) {
 			$scope.onClearFocus();
 		}
@@ -166,6 +170,14 @@ navigation.directive('navGrid', function($parse, $injector) {
 						$scope.xItems = $scope.xItems + $scope.xOverflowItem;
 						break;
 				}
+				if ($attrs.hasScroller && $attrs.hasScroller === 'true') {
+					$scope.$watch('y', function() {
+						$scope.$broadcast('scrollWork', $scope.y);
+					});
+					$scope.$watch('x', function() {
+						$scope.$broadcast('scrollWorkX', $scope.x);
+					});
+				}
 			};
 
 			$scope.matrix();
@@ -277,6 +289,7 @@ navigation.directive('navGrid', function($parse, $injector) {
 						$scope.x--
 					}
 					$scope.$emit('focusNavGridItemInNavGrid', $scope.elements[$scope.x + ':' + $scope.y], angular.element($scope.elements[$scope.x + ':' + $scope.y]).scope().getData(), angular.element($scope.elements[$scope.x + ':' + $scope.y]).scope().getItem());
+					//$scope.$emit('focusNavGridItemInNavGrid', $scope.elements[$scope.x + ':' + $scope.y], $scope.elements[$scope.x + ':' + $scope.y].scope().getData(), $scope.elements[$scope.x + ':' + $scope.y]).scope().getItem();
 				});
 			};
 
@@ -307,6 +320,7 @@ navigation.directive('navGrid', function($parse, $injector) {
 					}
 				}
 				$scope.setFocus();
+				return false;
 			};
 
 			$scope.noLoopFunction = function(x, coordinate) {
@@ -316,11 +330,13 @@ navigation.directive('navGrid', function($parse, $injector) {
 				} else {
 					$scope[coordinate] = $scope[coordinate] - x;
 				}
+				return true;
 			};
 
 			$scope.changeNavgridFocusPosition = function(x, coordinate) {
 				if ($scope[coordinate] >= 0 && $scope[coordinate] < $scope[coordinate + 'Items']) {
 					$scope.setFocus();
+					return false
 				} else {
 					$scope[coordinate] = $scope[coordinate] - x;
 					return true;
@@ -345,24 +361,14 @@ navigation.directive('navGrid', function($parse, $injector) {
 
 				if ($attrs.layout === $scope.orientationParam || $attrs.layout === 'both') {
 					if ($attrs.loop && ($attrs.loop === $scope.loopOrientatonParam || $attrs.loop === 'both')) {
-						$scope.loopFunction(x, coordinate);
+						return	$scope.loopFunction(x, coordinate);
 					} else {
-						$scope.noLoopFunction(x, coordinate);
+						return	$scope.noLoopFunction(x, coordinate);
 					}
-					return false;
 				} else {
-					$scope.changeNavgridFocusPosition(x, coordinate);
+					return $scope.changeNavgridFocusPosition(x, coordinate);
 				}
 			};
-
-			if ($attrs.hasScroller && $attrs.hasScroller === 'true') {
-				$scope.$watch('y', function() {
-					$scope.$broadcast('scrollWork', $scope.y);
-				});
-				$scope.$watch('x', function() {
-					$scope.$broadcast('scrollWorkX', $scope.x);
-				});
-			}
 
 			$scope.onKeyPress = function(code) {
 				switch (code) {
@@ -464,7 +470,7 @@ navigation.directive('navGrid', function($parse, $injector) {
 				if (value && (value = Number(value)) !== $scope.x) {
 					setTimeout(function() {
 						if ($scope.elements[$scope.x + ':' + $scope.y]) {
-							$($scope.elements[$scope.x + ':' + $scope.y]).removeClass('active');
+							$scope.elements[$scope.x + ':' + $scope.y].removeClass('active');
 						}
 						$scope.x = value;
 
@@ -523,9 +529,54 @@ navigation.directive('navGrid', function($parse, $injector) {
 			};
 			// Bind to remote service and listen for key press
 
+			$scope.bindKeyPress = function(){
+				console.log($scope.bindKeyPress);
+				RemoteService.bindKeyDown($scope.onKeyPressWrapper, $scope);
+				RemoteService.bindKeyUp($scope.onKeyUpWrapper, $scope);
+			};
 
-			RemoteService.bindKeyDown($scope.onKeyPressWrapper, $scope);
-			RemoteService.bindKeyUp($scope.onKeyUpWrapper, $scope);
+			$scope.unbindKeyPress = function(){
+				RemoteService.unbindKeyDown($scope.onKeyPressWrapper, $scope);
+				RemoteService.unbindKeyUp($scope.onKeyUpWrapper, $scope);
+			};
+
+			$scope.onSetFocus = function() {
+				if ($element.attr('on-active')) {
+					$parse($element.attr('on-active'))($scope);
+				}
+				if (!$scope.elements[$scope.x + ':' + $scope.y]) {
+					$scope.x = $scope.y = 0;
+					$scope.yScroll = $scope.xScroll = 0
+				}
+				FocusManager.clearFocus();
+				$scope.bindKeyPress();
+				$scope.setFocus();
+			};
+
+			$scope.onClearFocus = function() {
+				$scope.unbindKeyPress();
+				if ($element.attr('on-deactive')) {
+					$parse($element.attr('on-deactive'))($scope);
+				}
+				if ($scope.elements[$scope.x + ':' + $scope.y]) {
+					$($scope.elements[$scope.x + ':' + $scope.y]).removeClass('active');
+				}
+			};
+
+			$scope.bindKeyPress();
+			$scope.$on('$destroy', function() {
+				$scope.unbindKeyPress();
+				$scope.scroller = null;
+				for (var i in $scope.elements) {
+					$scope.elements[i].remove();
+
+					$scope.elements[i] = null;
+
+					$element.off();
+
+					delete $scope.elements[i];
+				}
+			});
 		},
 		compile: function compile(tElement, tAttrs, transclude) {
 			return function postLink(scope, iElement, iAttrs, controller) {
@@ -693,13 +744,11 @@ navigation.directive('navGridScroller', function($interpolate) {
 				//Число строк в навгриде
 				if ($scope.horizontal) {
 					$scope.columns = Math.ceil(length / columnItem);
-					console.log($scope.columns);
 					if ($scope.columns === 1) {
 						$scope._scrollerWidth = $scope._scrollerContainerWidth;
 					} else {
 						_scrollerContainerWidth = parseInt($scope._scrollerContainerWidth);
 						$scope._scrollerWidth = (Number(_scrollerContainerWidth) / Number($scope.columns) < 50) ? (50 + 'px') : (parseInt(Number(_scrollerContainerWidth) / Number($scope.columns), 10)) + 'px';
-						console.log($scope._scrollerWidth);
 					}
 					$scope.progressStep = (_scrollerContainerWidth - parseInt($scope._scrollerWidth, 10)) / ($scope.columns - 1);
 				} else {
@@ -721,7 +770,6 @@ navigation.directive('navGridScroller', function($interpolate) {
 
 			$scope.$on('scrollWorkX', function(event, currItem) {
 				if ($scope.horizontal) {
-					console.log($scope._scrollerLeft);
 					$scope._scrollerLeft = $scope.progressStep * currItem + 'px';
 				}
 			});

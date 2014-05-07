@@ -146,7 +146,7 @@
     background-color: #000000;
     cursor: pointer;
     float: left;
-  /*  display: none;*/
+    /*  display: none;*/
     /*background-image: image-url('scroll-btn.png');*/
 }
 .global-scroll--horizontal .global-scroll--button-top {
@@ -170,4 +170,7 @@
     margin-top: -5px;
     top: 50%;
     position: absolute;
+}
+.tv-container {
+    width: 400px;
 }
