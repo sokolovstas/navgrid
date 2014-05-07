@@ -264,20 +264,18 @@ navigation.directive('navGrid', function($parse, $injector) {
 
 			$scope.rebuildList = function(coordinate) {
 				if ($scope[coordinate] - $scope[coordinate + 'Scroll'] === $scope[coordinate + 'Items'] - $scope[coordinate + 'OverflowItem']) {
-					//$scope[coordinate + 'Scroll']++;
-					//$scope.getVisibleItem();
+					
 					//анимация
-					$('.nav-grid--scroller').css('transition', '');
-					$('.nav-grid--scroller').css('margin-top', -$scope.navGridItemHeight + 'px');
+					$('.nav-grid--scroller').css('transition', 'none 0s');
+					$('.nav-grid--scroller').css('margin-top', $scope.navGridItemHeight + 'px');
+
+					$scope[coordinate + 'Scroll']++;
+					$scope.getVisibleItem();
 
 					$scope.animationTimeout = setTimeout(function(){
-						$scope[coordinate + 'Scroll']++;
-						$scope.getVisibleItem();
-						$('.nav-grid--scroller').css('transition', 'none 0s');
+						$('.nav-grid--scroller').css('transition', '');
 						$('.nav-grid--scroller').css('margin-top', '0px');
-						$scope.setFocusNavGridItem();
-						$scope.animationTimeout = null;
-					}, 500);
+					}, 10);
 
 				} else if ($scope[coordinate] - $scope[coordinate + 'Scroll'] === 0 && $scope[coordinate + 'Scroll'] > 0) {
 					$scope[coordinate + 'Scroll']--;
