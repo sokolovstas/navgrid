@@ -80,7 +80,7 @@
 }
 .nav-grid--scroller {
     transition: all;
-    transition-duration: 0.5s;
+    transition-duration: 0.2s;
     height: 100%;
     overflow: hidden;
 }

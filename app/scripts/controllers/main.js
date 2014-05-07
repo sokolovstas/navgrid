@@ -38,5 +38,8 @@ angular.module('navGridApp')
 				callback(keys[i], object[keys[i]]);
 			}
 		};
+		$scope.$on('navGridChangePosition', function(event, scope) {
+/*			console.log('xxxxxxx');*/
+		});
 		RemoteService.init('PC');
 	});
