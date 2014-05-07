@@ -275,8 +275,11 @@ navigation.directive('navGrid', function($parse, $injector) {
 
 				if ($scope[coordinate] - $scope[coordinate + 'Scroll'] === $scope[coordinate + 'Items'] - $scope[coordinate + 'OverflowItem']) {
 					//анимация
-					$('.nav-grid--scroller').css('transition', 'none 0s');
-					$('.nav-grid--scroller').css($scope.marginParam, $scope.navGridItemHeight + 'px');
+
+					$scope.animationTimeout = setTimeout(function(){
+						$('.nav-grid--scroller').css('transition', 'none 0s');
+						$('.nav-grid--scroller').css($scope.marginParam, $scope.navGridItemHeight + 'px');
+					});
 
 					$scope[coordinate + 'Scroll']++;
 					$scope.getVisibleItem();
@@ -284,7 +287,7 @@ navigation.directive('navGrid', function($parse, $injector) {
 					$scope.animationTimeout = setTimeout(function() {
 						$('.nav-grid--scroller').css('transition', '');
 						$('.nav-grid--scroller').css($scope.marginParam, '0px');
-					}, 10);
+					}, 100);
 
 				} else if ($scope[coordinate] - $scope[coordinate + 'Scroll'] === 0 && $scope[coordinate + 'Scroll'] > 0) {
 					$('.nav-grid--scroller').css('transition', 'none 0s');
