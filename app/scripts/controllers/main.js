@@ -15,6 +15,19 @@ angular.module('navGridApp')
 			'Author',
 			'Hare',
 			'Stern',
+			'Black One',
+			'HTML5 Boilerplate',
+			'AngularJS',
+			'Karma',
+			'Meridia',
+			'Stels',
+			'Stark',
+			'AGang',
+			'Alpin Bike',
+			'Atom',
+			'Author',
+			'Hare',
+			'Stern',
 			'Black One'
 		];
 		window.sl = {};

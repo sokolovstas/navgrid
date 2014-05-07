@@ -121,7 +121,7 @@ navigation.directive('navGrid', function($parse, $injector) {
 			$scope.yScroll = 0;
 			$scope.xScroll = 0;
 
-			$scope.yOverflowItem = 0;
+			$scope.yOverflowItem = 2;
 			$scope.xOverflowItem = 0;
 
 			$element.addClass('nav-grid');
@@ -264,17 +264,21 @@ navigation.directive('navGrid', function($parse, $injector) {
 
 			$scope.rebuildList = function(coordinate) {
 				if ($scope[coordinate] - $scope[coordinate + 'Scroll'] === $scope[coordinate + 'Items'] - $scope[coordinate + 'OverflowItem']) {
-					$scope[coordinate + 'Scroll']++;
-					$scope.getVisibleItem();
+					//$scope[coordinate + 'Scroll']++;
+					//$scope.getVisibleItem();
 					//анимация
-					/*					$('.nav-grid--scroller').css('margin-top', -$scope.navGridItemHeight + 'px');
-					setTimeout(function(){
-						console.log('Анимация');
-						$('.nav-grid--scroller').css('transition', '');
+					$('.nav-grid--scroller').css('transition', '');
+					$('.nav-grid--scroller').css('margin-top', -$scope.navGridItemHeight + 'px');
+
+					$scope.animationTimeout = setTimeout(function(){
+						$scope[coordinate + 'Scroll']++;
+						$scope.getVisibleItem();
+						$('.nav-grid--scroller').css('transition', 'none 0s');
 						$('.nav-grid--scroller').css('margin-top', '0px');
-						
-						$('.nav-grid--scroller').css('transition', 'all');
-					}, 500);*/
+						$scope.setFocusNavGridItem();
+						$scope.animationTimeout = null;
+					}, 500);
+
 				} else if ($scope[coordinate] - $scope[coordinate + 'Scroll'] === 0 && $scope[coordinate + 'Scroll'] > 0) {
 					$scope[coordinate + 'Scroll']--;
 					$scope.getVisibleItem();
