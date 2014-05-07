@@ -124,8 +124,8 @@ navigation.directive('navGrid', function($parse, $injector) {
 			$scope.yScroll = 0;
 			$scope.xScroll = 0;
 
-			$scope.yOverflowItem = 1;
-			$scope.xOverflowItem = 1;
+			$scope.yOverflowItem = 0;
+			$scope.xOverflowItem = 0;
 
 			$element.addClass('nav-grid');
 
@@ -359,6 +359,9 @@ navigation.directive('navGrid', function($parse, $injector) {
 				$scope.$watch('y', function() {
 					$scope.$broadcast('scrollWork', $scope.y);
 				});
+				$scope.$watch('x', function() {
+					$scope.$broadcast('scrollWorkX', $scope.x);
+				});
 			}
 
 			$scope.onKeyPress = function(code) {
@@ -480,8 +483,14 @@ navigation.directive('navGrid', function($parse, $injector) {
 			$scope.$on('scrollDown', function(event) {
 				$scope.onKeyPress(RemoteService.KEY_DOWN);
 			});
+			$scope.$on('scrollLeft', function(event) {
+				$scope.onKeyPress(RemoteService.KEY_LEFT);
+			});
+			$scope.$on('scrollRight', function(event) {
+				$scope.onKeyPress(RemoteService.KEY_RIGHT);
+			});
 			$scope.$on('getItemLength', function(event) {
-				$scope.$broadcast('returnItemLength', $scope.navGridDataLength, $scope.containerHeightInPixels, $attrs.horizontalItem);
+				$scope.$broadcast('returnItemLength', $scope.navGridDataLength, $scope.containerHeightInPixels, $attrs.horizontalItem, $attrs.verticalItem);
 			});
 
 
@@ -655,12 +664,13 @@ navigation.directive('navGridScroller', function($interpolate) {
 		templateUrl: 'scroller.html',
 		scope: true,
 		controller: function controller($scope, $element, $attrs) {
-			var _scrollerContainerHeight;
+			var _scrollerContainerHeight, _scrollerContainerWidth;
 
 			if ($attrs.horizontal && $attrs.horizontal === 'horizontal') {
-
+				$scope.horizontal = true;
+				$scope._scrollerContainerWidth = $scope.containerWidth - 108 + 'px';
 			} else {
-				$element.addClass('global-scroll--vertical');
+				$scope.horizontal = false;
 				$scope._scrollerContainerHeight = $scope.containerHeight + 'px';
 			}
 
@@ -670,23 +680,53 @@ navigation.directive('navGridScroller', function($interpolate) {
 			$scope._scrollerClickDown = function() {
 				$scope.$emit('scrollDown');
 			};
+			$scope._scrollerClickLeft = function() {
+				$scope.$emit('scrollLeft');
+			};
+			$scope._scrollerClickRight = function() {
+				$scope.$emit('scrollRight');
+			};
 
-			$scope.$on('returnItemLength', function(event, length, height, rowItem) {
+			$scope.$on('returnItemLength', function(event, length, height, rowItem, columnItem) {
 				//$scope._scrollerContainerHeight = height - 108;
 
 				//Число строк в навгриде
-				$scope.rows = Math.ceil(length / rowItem);
-				if ($scope.rows === 1) {
-					$scope._scrollerHeight = $scope._scrollerContainerHeight;
+				if ($scope.horizontal) {
+					$scope.columns = Math.ceil(length / columnItem);
+					console.log($scope.columns);
+					if ($scope.columns === 1) {
+						$scope._scrollerWidth = $scope._scrollerContainerWidth;
+					} else {
+						_scrollerContainerWidth = parseInt($scope._scrollerContainerWidth);
+						$scope._scrollerWidth = (Number(_scrollerContainerWidth) / Number($scope.columns) < 50) ? (50 + 'px') : (parseInt(Number(_scrollerContainerWidth) / Number($scope.columns), 10)) + 'px';
+						console.log($scope._scrollerWidth);
+					}
+					$scope.progressStep = (_scrollerContainerWidth - parseInt($scope._scrollerWidth, 10)) / ($scope.columns - 1);
 				} else {
-					_scrollerContainerHeight = parseInt($scope._scrollerContainerHeight);
-					$scope._scrollerHeight = (Number(_scrollerContainerHeight) / Number($scope.rows) < 50) ? (50 + 'px') : (parseInt(Number(_scrollerContainerHeight) / Number($scope.rows), 10)) + 'px';
+					$scope.rows = Math.ceil(length / rowItem);
+					if ($scope.rows === 1) {
+						$scope._scrollerHeight = $scope._scrollerContainerHeight;
+					} else {
+						_scrollerContainerHeight = parseInt($scope._scrollerContainerHeight);
+						$scope._scrollerHeight = (Number(_scrollerContainerHeight) / Number($scope.rows) < 50) ? (50 + 'px') : (parseInt(Number(_scrollerContainerHeight) / Number($scope.rows), 10)) + 'px';
+					}
+					$scope.progressStep = (_scrollerContainerHeight - parseInt($scope._scrollerHeight, 10)) / ($scope.rows - 1);
 				}
-				$scope.progressStep = (_scrollerContainerHeight - parseInt($scope._scrollerHeight, 10)) / ($scope.rows - 1);
+
 			});
+
 			$scope.$on('scrollWork', function(event, currItem) {
 				$scope._scrollerTop = $scope.progressStep * currItem + 'px';
 			});
+
+			$scope.$on('scrollWorkX', function(event, currItem) {
+				if ($scope.horizontal) {
+					console.log($scope._scrollerLeft);
+					$scope._scrollerLeft = $scope.progressStep * currItem + 'px';
+				}
+			});
+
+
 			$scope.$on('$destroy', function() {
 				$element.remove();
 			});

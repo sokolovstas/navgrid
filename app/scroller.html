@@ -1,7 +1,15 @@
-<div class="global-scroll--wrapper">
+<div ng-if="!horizontal" class="global-scroll--wrapper">
 	<div class="global-scroll--button-top" ng-click="_scrollerClickTop()"></div>
 	<div class="global-scroll--scroll-container" ng-style="{'height': _scrollerContainerHeight}">
 		<div class="global-scroll--button-scroller" ng-style="{'height':_scrollerHeight, 'top': _scrollerTop}"></div>
 	</div>
 	<div class="global-scroll--button-down" ng-click="_scrollerClickDown()"></div>
+</div>
+
+<div ng-if="horizontal" class="global-scroll--wrapper-horizontal">
+	<div class="global-scroll--button-left-horizontal" ng-click="_scrollerClickLeft()"></div>
+	<div class="global-scroll--scroll-container-horizontal" ng-style="{'width': _scrollerContainerWidth}">
+		<div class="global-scroll--button-scroller-horizontal" ng-style="{'width': _scrollerWidth, 'left': _scrollerLeft}"></div>
+	</div>
+	<div class="global-scroll--button-right-horizontal" ng-click="_scrollerClickRight()"></div>
 </div>

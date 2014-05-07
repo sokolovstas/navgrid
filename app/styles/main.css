@@ -73,14 +73,16 @@
 }
 .tv-container--channels-list {
     width: 400px;
-    height: 100px;
+    height: 20px;
     border: solid 1px #e2e2e2;
-    padding-right: 54px;
-    /*padding-bottom: 54px;*/
+    padding-right: 0px;
+    padding-bottom: 54px;
 }
 .nav-grid--scroller {
     transition: all;
     transition-duration: 0.5s;
+    height: 100%;
+    overflow: hidden;
 }
 .nav-grid--nav-item {
     cursor: pointer;
@@ -103,10 +105,10 @@
     right: 0px;
     top: 0px;
 }
-.global-scroll--vertical > .global-scroll--wrapper {
+.global-scroll--wrapper {
     width: 54px;
 }
-.global-scroll--vertical .global-scroll--button-top, .global-scroll--vertical .global-scroll--button-down {
+.global-scroll--button-top, .global-scroll--button-down {
     width: 54px;
     height: 54px;
     background-color: #000000;
@@ -114,38 +116,37 @@
     display: none;
     /*background-image: image-url('scroll-btn.png');*/
 }
-.global-scroll--vertical .global-scroll--button-top {
+.global-scroll--button-top {
     background-position: top center;
 }
-.global-scroll--vertical .global-scroll--button-down {
+.global-scroll--button-down {
     background-position: bottom center;
 }
-.global-scroll--vertical .global-scroll--scroll-container {
+.global-scroll--scroll-container {
     width: 20px;
     background-color: #000000;
     margin: 0 auto;
 }
-.global-scroll--vertical .global-scroll--button-scroller {
+.global-scroll--button-scroller {
     background-color: #e2e2e2;
     width: 10px;
     height: 50px;
     margin: 0 auto;
     position: relative;
 }
-.global-scroll--horizontal {
+.global-scroll--wrapper-horizontal {
     position: absolute;
     left: 0px;
     bottom: 0px;
+    height: 54px;
 }
-.global-scroll--horizontal > .global-scroll--wrapper {
-    width: 54px;
-}
-.global-scroll--horizontal .global-scroll--button-top, .global-scroll--horizontal .global-scroll--button-down {
+.global-scroll--button-left-horizontal, .global-scroll--button-right-horizontal {
     width: 54px;
     height: 54px;
     background-color: #000000;
     cursor: pointer;
-    display: none;
+    float: left;
+  /*  display: none;*/
     /*background-image: image-url('scroll-btn.png');*/
 }
 .global-scroll--horizontal .global-scroll--button-top {
@@ -154,15 +155,19 @@
 .global-scroll--horizontal .global-scroll--button-down {
     background-position: bottom center;
 }
-.global-scroll--horizontal .global-scroll--scroll-container {
-    width: 20px;
-    background-color: #000000;
-    margin: 0 auto;
-}
-.global-scroll--horizontal .global-scroll--button-scroller {
-    background-color: #e2e2e2;
-    width: 10px;
-    height: 50px;
-    margin: 0 auto;
+.global-scroll--scroll-container-horizontal {
     position: relative;
+    float: left;
+    height: 20px;
+    background-color: #000000;
+    top: 50%;
+    margin-top: -10px;
+}
+.global-scroll--button-scroller-horizontal {
+    background-color: #e2e2e2;
+    width: 50px;
+    height: 10px;
+    margin-top: -5px;
+    top: 50%;
+    position: absolute;
 }
