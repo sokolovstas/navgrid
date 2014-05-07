@@ -239,7 +239,7 @@ navigation.directive('navGrid', function($parse, $injector) {
 				});
 			};
 
-			$scope.navGridChangePosition = function(){
+			$scope.navGridChangePosition = function() {
 				var classes = $attrs.class.split(' ');
 				for (var i in classes) {
 					$scope.$emit(classes[i] + ':navGridChangePosition', $scope);
@@ -264,23 +264,39 @@ navigation.directive('navGrid', function($parse, $injector) {
 			});
 
 			$scope.rebuildList = function(coordinate) {
-				if ($scope[coordinate] - $scope[coordinate + 'Scroll'] === $scope[coordinate + 'Items'] - $scope[coordinate + 'OverflowItem']) {
+				switch (coordinate) {
+					case 'y':
+						$scope.marginParam = 'margin-top';
+						break;
+					case 'x':
+						$scope.marginParam = 'margin-left';
+						break;
+				}
 
+				if ($scope[coordinate] - $scope[coordinate + 'Scroll'] === $scope[coordinate + 'Items'] - $scope[coordinate + 'OverflowItem']) {
 					//анимация
 					$('.nav-grid--scroller').css('transition', 'none 0s');
-					$('.nav-grid--scroller').css('margin-top', $scope.navGridItemHeight + 'px');
+					$('.nav-grid--scroller').css($scope.marginParam, $scope.navGridItemHeight + 'px');
 
 					$scope[coordinate + 'Scroll']++;
 					$scope.getVisibleItem();
 
-					$scope.animationTimeout = setTimeout(function(){
+					$scope.animationTimeout = setTimeout(function() {
 						$('.nav-grid--scroller').css('transition', '');
-						$('.nav-grid--scroller').css('margin-top', '0px');
+						$('.nav-grid--scroller').css($scope.marginParam, '0px');
 					}, 10);
 
 				} else if ($scope[coordinate] - $scope[coordinate + 'Scroll'] === 0 && $scope[coordinate + 'Scroll'] > 0) {
+					$('.nav-grid--scroller').css('transition', 'none 0s');
+					$('.nav-grid--scroller').css($scope.marginParam, -$scope.navGridItemHeight + 'px');
+
 					$scope[coordinate + 'Scroll']--;
 					$scope.getVisibleItem();
+
+					$scope.animationTimeout = setTimeout(function() {
+						$('.nav-grid--scroller').css('transition', '');
+						$('.nav-grid--scroller').css($scope.marginParam, '0px');
+					}, 10);
 				}
 			};
 
@@ -303,7 +319,7 @@ navigation.directive('navGrid', function($parse, $injector) {
 						//Y Для выборки данных
 						$scope[coordinate] = Math.ceil($scope.navGridDataLength / $scope[$scope.coordinatParam + 'Items'] - $scope[$scope.coordinatParam + 'OverflowItem']);
 						$scope[coordinate + 'Scroll'] = $scope[coordinate] - ($scope[coordinate + 'Items'] - $scope[coordinate + 'OverflowItem']);
-						
+
 						$scope.getVisibleItem();
 						//Y для установки фокуса
 						$scope[coordinate]--;
@@ -362,9 +378,9 @@ navigation.directive('navGrid', function($parse, $injector) {
 
 				if ($attrs.layout === $scope.orientationParam || $attrs.layout === 'both') {
 					if ($attrs.loop && ($attrs.loop === $scope.loopOrientatonParam || $attrs.loop === 'both')) {
-						return	$scope.loopFunction(x, coordinate);
+						return $scope.loopFunction(x, coordinate);
 					} else {
-						return	$scope.noLoopFunction(x, coordinate);
+						return $scope.noLoopFunction(x, coordinate);
 					}
 				} else {
 					return $scope.changeNavgridFocusPosition(x, coordinate);
@@ -530,12 +546,12 @@ navigation.directive('navGrid', function($parse, $injector) {
 			};
 			// Bind to remote service and listen for key press
 
-			$scope.bindKeyPress = function(){
+			$scope.bindKeyPress = function() {
 				RemoteService.bindKeyDown($scope.onKeyPressWrapper, $scope);
 				RemoteService.bindKeyUp($scope.onKeyUpWrapper, $scope);
 			};
 
-			$scope.unbindKeyPress = function(){
+			$scope.unbindKeyPress = function() {
 				RemoteService.unbindKeyDown($scope.onKeyPressWrapper, $scope);
 				RemoteService.unbindKeyUp($scope.onKeyUpWrapper, $scope);
 			};
