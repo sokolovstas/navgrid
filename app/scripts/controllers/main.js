@@ -2,34 +2,33 @@
 
 angular.module('navGridApp')
 	.controller('MainCtrl', function($scope, RemoteService) {
-		$scope.awesomeThings = [
-			'HTML5 Boilerplate',
-			'AngularJS',
-			'Karma',
-			'Meridia',
-			'Stels',
-			'Stark',
-			'AGang',
-			'Alpin Bike',
-			'Atom',
-			'Author',
-			'Hare',
-			'Stern',
-			'Black One',
-			'HTML5 Boilerplate',
-			'AngularJS',
-			'Karma',
-			'Meridia',
-			'Stels',
-			'Stark',
-			'AGang',
-			'Alpin Bike',
-			'Atom',
-			'Author',
-			'Hare',
-			'Stern',
-			'Black One'
-		];
+		$scope.awesomeThings = [{
+			name: 'HTML5 Boilerplate'
+		}, {
+			name: 'AngularJS'
+		}, {
+			name: 'Karma'
+		}, {
+			name: 'Meridia'
+		}, {
+			name: 'Stels'
+		}, {
+			name: 'Stark'
+		}, {
+			name: 'AGang'
+		}, {
+			name: 'Alpin Bike'
+		}, {
+			name: 'Atom'
+		}, {
+			name: 'Author'
+		}, {
+			name: 'Hare'
+		}, {
+			name: 'Stern'
+		}, {
+			name: 'Black One'
+		}];
 		window.sl = {};
 		sl.forEach = function(object, callback) {
 			var keys = Object.keys(object);
@@ -39,7 +38,7 @@ angular.module('navGridApp')
 			}
 		};
 		$scope.$on('navGridChangePosition', function(event, scope) {
-/*			console.log('xxxxxxx');*/
+			/*			console.log('xxxxxxx');*/
 		});
 		RemoteService.init('PC');
 	});

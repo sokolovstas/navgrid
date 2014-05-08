@@ -59,14 +59,14 @@
 
     <div ng-controller="MainCtrl">
         <div class="tv-container class4" nav-item>item 0</div>
-        <div class="tv-container--channels-list" nav-grid="awesomeThings" last-y="0" last-x="0" default-focus horizontal-item="2" vertical-item="5" layout="vertical" loop="vertical" has-scroller="">
+        <div class="tv-container--channels-list" nav-grid="awesomeThings" last-y="0" last-x="2" default-focus horizontal-item="5" vertical-item="1" layout="horizontal" loop="horizontal" has-scroller="">
 <!--             <div class="globall-scroller-container--scroller tv-container--channels-list-scroller">
                 <div nav-grid-scroller horizontal=""></div>
             </div> -->
             <div class="nav-grid--scroller">
-                <a class="tv-container--channel-item nav-grid--nav-item" ng-repeat="channel in navGridItems track by $index" nav-grid-item="{{$index}}" nav-grid-data="{{channel}}" nav-click="channelClick()">
+                <a class="tv-container--channel-item nav-grid--nav-item" ng-repeat="channel in navGridItems track by $index" nav-grid-item="{{$index}}" nav-grid-data="{{channel.name}}" nav-click="channelClick()">
                     <div>
-                        {{channel}}
+                        {{channel.name}}
                     </div>
                 </a>
             </div>

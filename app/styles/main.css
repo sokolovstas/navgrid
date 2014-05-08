@@ -72,8 +72,8 @@
     position: relative;
 }
 .tv-container--channels-list {
-    width: 400px;
-    height: 100px;
+    width: 1000px;
+    height: 20px;
     border: solid 1px #e2e2e2;
     padding-right: 0px;
   /*  padding-bottom: 54px;*/
@@ -175,5 +175,5 @@
     position: absolute;
 }
 .tv-container {
-    width: 400px;
+    width: 1000px;
 }
