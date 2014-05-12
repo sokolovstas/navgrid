@@ -59,7 +59,19 @@
 
     <div ng-controller="MainCtrl">
         <div class="tv-container class4" nav-item>item 0</div>
-        <div class="tv-container--channels-list" nav-grid="awesomeThings" last-y="0" last-x="3" default-focus horizontal-item="5" vertical-item="1" layout="horizontal" loop="horizontal" has-scroller="" whirligig="true" whirligigWadding="3">
+        <div class="tv-container--channels-list" nav-grid="awesomeThings" last-y="0" last-x="4" default-focus horizontal-item="7" vertical-item="1" layout="horizontal" loop="horizontal" has-scroller="" whirligig="true" whirligig-wadding="3">
+<!--             <div class="globall-scroller-container--scroller tv-container--channels-list-scroller">
+                <div nav-grid-scroller horizontal=""></div>
+            </div> -->
+            <div class="nav-grid--scroller">
+                <a class="tv-container--channel-item nav-grid--nav-item" ng-repeat="channel in navGridItems track by $index" nav-grid-item="{{$index}}" nav-grid-data="{{channel.name}}" nav-click="channelClick()">
+                    <div>
+                        {{channel.name}}
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="tv-container--channels-list" nav-grid="awesomeThings" last-y="0" last-x="4" default-focus horizontal-item="7" vertical-item="1" layout="horizontal" loop="horizontal" has-scroller="" whirligig="true" whirligig-wadding="3">
 <!--             <div class="globall-scroller-container--scroller tv-container--channels-list-scroller">
                 <div nav-grid-scroller horizontal=""></div>
             </div> -->
