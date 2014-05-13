@@ -437,10 +437,11 @@ navigation.directive('navGrid', function($parse, $injector) {
 				if ($scope[coordinate] >= 0 && $scope[coordinate] < Math.ceil($scope.navGridDataLength / $scope[$scope.coordinatParam + 'Items'])) {
 					$scope.rebuildList(coordinate);
 					//$scope.setFocusNavGridItem();
+					return false;
 				} else {
 					$scope[coordinate] = $scope[coordinate] - x;
+					return true;
 				}
-				return true;
 			};
 
 			$scope.changeNavgridFocusPosition = function(x, coordinate) {
@@ -542,7 +543,9 @@ navigation.directive('navGrid', function($parse, $injector) {
 			$scope.onKeyPress = function(code) {
 				switch (code) {
 					case RemoteService.KEY_LEFT:
-						if ($attrs.focusLeft && $attrs.focusLeft !== '') {
+						if ($element.attr('on-left')) {
+							$parse($element.attr('on-left'))($scope);
+						} else if ($attrs.focusLeft && $attrs.focusLeft !== '') {
 							setTimeout(function() {
 								FocusManager.setFocusToElement($($attrs.focusUp));
 								return;
@@ -554,7 +557,9 @@ navigation.directive('navGrid', function($parse, $injector) {
 						}
 						break;
 					case RemoteService.KEY_RIGHT:
-						if ($attrs.focusRight && $attrs.focusRight !== '') {
+						if ($element.attr('on-right')) {
+							$parse($element.attr('on-right'))($scope);
+						} else if ($attrs.focusRight && $attrs.focusRight !== '') {
 							setTimeout(function() {
 								FocusManager.setFocusToElement($($attrs.focusRight));
 								return;
@@ -566,7 +571,9 @@ navigation.directive('navGrid', function($parse, $injector) {
 						}
 						break;
 					case RemoteService.KEY_UP:
-						if ($attrs.focusUp && $attrs.focusUp !== '') {
+						if ($element.attr('on-up')) {
+							$parse($element.attr('on-up'))($scope);
+						} else if ($attrs.focusUp && $attrs.focusUp !== '') {
 							setTimeout(function() {
 								FocusManager.setFocusToElement($($attrs.focusUp));
 								return;
@@ -578,6 +585,9 @@ navigation.directive('navGrid', function($parse, $injector) {
 						}
 						break;
 					case RemoteService.KEY_DOWN:
+						if ($element.attr('on-down')) {
+							$parse($element.attr('on-down'))($scope);
+						} else
 						if ($attrs.focusDown && $attrs.focusDown !== '') {
 							setTimeout(function() {
 								FocusManager.setFocusToElement($($attrs.focusDown));
@@ -617,25 +627,38 @@ navigation.directive('navGrid', function($parse, $injector) {
 				}
 			};
 
+			$scope.lastFunction = function(value, coordinate) {
+				if ($scope.elements[$scope.x + ':' + $scope.y]) {
+					$($scope.elements[$scope.x + ':' + $scope.y]).removeClass('active');
+				}
+
+				$scope[coordinate] = value;
+
+				if ($scope[coordinate] !== $scope[coordinate + 'ItemsOrigin'] && $scope[coordinate] !== 0) {
+					$scope[coordinate + 'Scroll'] = Math.max(($scope[coordinate] + 1) - $scope[coordinate + 'ItemsOrigin'], 0);
+				} else if ($scope[coordinate] === $scope[coordinate + 'ItemsOrigin']) {
+					$scope[coordinate + 'Scroll'] = 1;
+				}
+
+				if ($scope[coordinate + 'Scroll'] > 0) {
+					switch (coordinate) {
+						case 'x':
+							$scope.scroller.css('left', -$scope[coordinate + 'NavGridItemParam'] + 'px');
+							break;
+						case 'y':
+							$scope.scroller.css('top', -$scope[coordinate + 'NavGridItemParam'] + 'px');
+							break;
+					}
+				}
+
+				$scope.getVisibleItem();
+				//$scope.setFocusNavGridItem();
+			};
+
 			$scope.$watch($attrs.lastY, function(value) {
 				if (value && (value = Number(value)) !== $scope.y) {
 					setTimeout(function() {
-						if ($scope.elements[$scope.x + ':' + $scope.y]) {
-							$($scope.elements[$scope.x + ':' + $scope.y]).removeClass('active');
-						}
-						$scope.y = value;
-
-						if ($scope.y !== $scope.yItemsOrigin && $scope.y !== 0) {
-							$scope.yScroll = Math.max(($scope.y + 1) - $scope.yItemsOrigin, 0);
-						} else if ($scope.y === $scope.yItemsOrigin) {
-							$scope.yScroll = 1;
-						}
-
-						if ($scope.yScroll > 0) {
-							$scope.scroller.css('top', -$scope.yNavGridItemParam + 'px');
-						}
-						$scope.getVisibleItem();
-						$scope.setFocusNavGridItem();
+						$scope.lastFunction(value, 'y');
 					});
 				}
 			});
@@ -643,23 +666,7 @@ navigation.directive('navGrid', function($parse, $injector) {
 			$scope.$watch($attrs.lastX, function(value) {
 				if (value && (value = Number(value)) !== $scope.x) {
 					setTimeout(function() {
-						if ($scope.elements[$scope.x + ':' + $scope.y]) {
-							$($scope.elements[$scope.x + ':' + $scope.y]).removeClass('active');
-						}
-						$scope.x = value;
-
-						if ($scope.x !== $scope.xItemsOrigin && $scope.x !== 0) {
-							$scope.xScroll = Math.max(($scope.x + 1) - $scope.xItemsOrigin, 0);
-						} else if ($scope.x === $scope.xItemsOrigin) {
-							$scope.xScroll = 1;
-						}
-
-						if ($scope.xScroll > 0) {
-							$scope.scroller.css('left', -$scope.xNavGridItemParam + 'px');
-						}
-
-						$scope.getVisibleItem();
-						$scope.setFocusNavGridItem();
+						$scope.lastFunction(value, 'x');
 					});
 				}
 			});
